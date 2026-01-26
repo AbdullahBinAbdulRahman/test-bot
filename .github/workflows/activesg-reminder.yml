@@ -2,7 +2,7 @@ name: ActiveSG Booking Bot
 
 on:
   schedule:
-    - cron: "14 19 * * *"  # 2:55 AM Singapore time (UTC+8) = 18:55 UTC previous day
+    - cron: "33 19 * * *"  # 3:33 AM Singapore time (UTC+8) = 19:33 UTC previous day
   workflow_dispatch:
 
 jobs:
