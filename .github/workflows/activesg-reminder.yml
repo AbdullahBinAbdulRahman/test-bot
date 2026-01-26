@@ -1,4 +1,4 @@
-name: ActiveSG Weekday Reminder
+name: ActiveSG Booking Bot
 
 on:
   schedule:
