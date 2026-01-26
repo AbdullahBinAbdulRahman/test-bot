@@ -2,7 +2,7 @@ name: ActiveSG Weekday Reminder
 
 on:
   schedule:
-    - cron: "45 18 * * *"  # 2:45 AM Singapore time (UTC+8) = 18:45 UTC previous day
+    - cron: "50 18 * * *"  # 2:50 AM Singapore time (UTC+8) = 18:50 UTC previous day
   workflow_dispatch:
 
 jobs:
