@@ -1,0 +1,25 @@
+name: ActiveSG Weekday Reminder
+
+on:
+  schedule:
+    - cron: "45 18 * * *"  # 2:45 AM Singapore time (UTC+8) = 18:45 UTC previous day
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+      TZ: Asia/Singapore
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Send reminder
+        run: python activesg_bot.py
