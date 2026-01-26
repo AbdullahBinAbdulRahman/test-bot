@@ -11,7 +11,7 @@ ACTIVITY_ID = "YLONatwvqJfikKOmB5N9U"
 
 DAYS_AHEAD = 14
 BOOKING_START_HOUR = 19
-BOOKING_END_HOUR = 21
+BOOKING_END_HOUR = 20
 
 
 def get_env(name, default=None, required=False):
