@@ -86,7 +86,8 @@ def main():
     booking_url = build_booking_url(start_ms, end_ms, VENUE_ID, ACTIVITY_ID)
 
     start_time = start_dt.strftime("%I:%M %p").lstrip("0")
-    end_time = end_dt.strftime("%I:%M %p").lstrip("0")
+    display_end_dt = end_dt + timedelta(hours=1)
+    end_time = display_end_dt.strftime("%I:%M %p").lstrip("0")
 
     message = (
         "ActiveSG Booking Reminder\n\n"
