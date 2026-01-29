@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import requests
 
 BASE_URL = "https://activesg.gov.sg/facility-bookings/ballots/review"
-VENUE_ID = "LpiaS3dnMUXa39CrtTm9w"
+VENUE_ID = "GdiZXcMkIKELrCkd90qBP"  # Bishan Clubhouse
 ACTIVITY_ID = "YLONatwvqJfikKOmB5N9U"
 
 DAYS_AHEAD = 14
