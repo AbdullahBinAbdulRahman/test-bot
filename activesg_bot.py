@@ -10,8 +10,12 @@ VENUE_ID = "GdiZXcMkIKELrCkd90qBP"  # Bishan Clubhouse
 ACTIVITY_ID = "YLONatwvqJfikKOmB5N9U"
 
 DAYS_AHEAD = 14
-BOOKING_START_HOUR = 19
-BOOKING_END_HOUR = 20
+# Weekday slots: 8pm-9pm (displayed as 8-10pm for two 1-hour slots)
+WEEKDAY_START_HOUR = 20
+WEEKDAY_END_HOUR = 21
+# Weekend slots: 5pm-6pm (displayed as 5-7pm for two 1-hour slots)
+WEEKEND_START_HOUR = 17
+WEEKEND_END_HOUR = 18
 
 
 def get_env(name, default=None, required=False):
@@ -57,7 +61,7 @@ def send_telegram(token, chat_id, message):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Send weekday ActiveSG booking reminders via Telegram."
+        description="Send ActiveSG booking reminders via Telegram."
     )
     parser.add_argument(
         "--dry-run",
@@ -74,14 +78,20 @@ def main():
         ) from exc
 
     now = datetime.now(sgt)
-    if now.weekday() >= 5:
-        print("Weekend detected; skipping send.")
-        return
-
     bot_token = get_env("BOT_TOKEN", required=True)
     chat_id = get_env("CHAT_ID", required=True)
+    
+    # Determine if target booking day is weekend or weekday
+    target_date = now + timedelta(days=DAYS_AHEAD)
+    is_weekend = target_date.weekday() >= 5
+    
+    if is_weekend:
+        start_hour, end_hour = WEEKEND_START_HOUR, WEEKEND_END_HOUR
+    else:
+        start_hour, end_hour = WEEKDAY_START_HOUR, WEEKDAY_END_HOUR
+    
     start_dt, end_dt, start_ms, end_ms = compute_timeslots(
-        now, DAYS_AHEAD, BOOKING_START_HOUR, BOOKING_END_HOUR
+        now, DAYS_AHEAD, start_hour, end_hour
     )
     booking_url = build_booking_url(start_ms, end_ms, VENUE_ID, ACTIVITY_ID)
 
