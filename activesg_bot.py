@@ -15,9 +15,9 @@ DAYS_AHEAD = 14
 # Weekday slots: 8pm-9pm (displayed as 8-10pm for two 1-hour slots)
 WEEKDAY_START_HOUR = 20
 WEEKDAY_END_HOUR = 21
-# Weekend slots: 5pm-6pm (displayed as 5-7pm for two 1-hour slots)
-WEEKEND_START_HOUR = 17
-WEEKEND_END_HOUR = 18
+# Weekend slots: 4pm-5pm (displayed as 4-6pm for two 1-hour slots)
+WEEKEND_START_HOUR = 16
+WEEKEND_END_HOUR = 17
 
 
 def get_env(name, default=None, required=False):
