@@ -6,7 +6,9 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import requests
 
 BASE_URL = "https://activesg.gov.sg/facility-bookings/ballots/review"
-VENUE_ID = "GdiZXcMkIKELrCkd90qBP"  # Bishan Clubhouse
+# Venue IDs
+BISHAN_VENUE_ID = "GdiZXcMkIKELrCkd90qBP"
+MOE_EVANS_VENUE_ID = "kEBJKrx1USi4BvQxwMMHs"
 ACTIVITY_ID = "YLONatwvqJfikKOmB5N9U"
 
 DAYS_AHEAD = 14
@@ -83,7 +85,16 @@ def main():
     
     # Determine if target booking day is weekend or weekday
     target_date = now + timedelta(days=DAYS_AHEAD)
-    is_weekend = target_date.weekday() >= 5
+    target_weekday = target_date.weekday()  # 0=Monday, 1=Tuesday, ..., 6=Sunday
+    is_weekend = target_weekday >= 5
+    
+    # Determine venue and location based on day of week
+    if target_weekday in [0, 2]:  # Monday or Wednesday
+        venue_id = MOE_EVANS_VENUE_ID
+        location = "MOE (Evans) Sport Hall"
+    else:  # Tuesday, Thursday, Friday, Saturday, Sunday
+        venue_id = BISHAN_VENUE_ID
+        location = "Bishan Clubhouse"
     
     if is_weekend:
         start_hour, end_hour = WEEKEND_START_HOUR, WEEKEND_END_HOUR
@@ -93,7 +104,7 @@ def main():
     start_dt, end_dt, start_ms, end_ms = compute_timeslots(
         now, DAYS_AHEAD, start_hour, end_hour
     )
-    booking_url = build_booking_url(start_ms, end_ms, VENUE_ID, ACTIVITY_ID)
+    booking_url = build_booking_url(start_ms, end_ms, venue_id, ACTIVITY_ID)
 
     start_time = start_dt.strftime("%I:%M %p").lstrip("0")
     display_end_dt = end_dt + timedelta(hours=1)
@@ -101,6 +112,7 @@ def main():
 
     message = (
         "ActiveSG Booking Reminder\n\n"
+        f"Location: {location}\n"
         f"Date: {start_dt.strftime('%A, %d %b %Y')}\n"
         f"Time: {start_time} - {end_time}\n\n"
         f"Book now:\n{booking_url}"
