@@ -7,17 +7,17 @@ import requests
 
 BASE_URL = "https://activesg.gov.sg/facility-bookings/ballots/review"
 # Venue IDs
-BISHAN_VENUE_ID = "GdiZXcMkIKELrCkd90qBP"
-MOE_EVANS_VENUE_ID = "kEBJKrx1USi4BvQxwMMHs"
+BISHAN_CLUBHOUSE_VENUE_ID = "GdiZXcMkIKELrCkd90qBP"
+BISHAN_SPORTS_HALL_VENUE_ID = "LpiaS3dnMUXa39CrtTm9w"
 ACTIVITY_ID = "YLONatwvqJfikKOmB5N9U"
 
 DAYS_AHEAD = 14
-# Weekday slots: 8pm-9pm (displayed as 8-10pm for two 1-hour slots)
-WEEKDAY_START_HOUR = 20
-WEEKDAY_END_HOUR = 21
-# Weekend slots: 4pm-5pm (displayed as 4-6pm for two 1-hour slots)
-WEEKEND_START_HOUR = 16
-WEEKEND_END_HOUR = 17
+# Weekday slots: 8pm-10pm (displayed as 8-10pm for two 1-hour slots)
+WEEKDAY_FIRST_HOUR = 20
+WEEKDAY_SECOND_HOUR = 21
+# Weekend slots: 4pm-6pm (displayed as 4-6pm for two 1-hour slots)
+WEEKEND_FIRST_HOUR = 16
+WEEKEND_SECOND_HOUR = 17
 
 
 def get_env(name, default=None, required=False):
@@ -85,26 +85,20 @@ def main():
     
     # Determine if target booking day is weekend or weekday
     target_date = now + timedelta(days=DAYS_AHEAD)
-    target_weekday = target_date.weekday()  # 0=Monday, 1=Tuesday, ..., 6=Sunday
-    is_weekend = target_weekday >= 5
-    
-    # Determine venue and location based on day of week
-    if target_weekday in [0, 2]:  # Monday or Wednesday
-        venue_id = MOE_EVANS_VENUE_ID
-        location = "MOE (Evans) Sport Hall"
-    else:  # Tuesday, Thursday, Friday, Saturday, Sunday
-        venue_id = BISHAN_VENUE_ID
-        location = "Bishan Clubhouse"
+    is_weekend = target_date.weekday() >= 5
     
     if is_weekend:
-        start_hour, end_hour = WEEKEND_START_HOUR, WEEKEND_END_HOUR
+        start_hour, end_hour = WEEKEND_FIRST_HOUR, WEEKEND_SECOND_HOUR
     else:
-        start_hour, end_hour = WEEKDAY_START_HOUR, WEEKDAY_END_HOUR
+        start_hour, end_hour = WEEKDAY_FIRST_HOUR, WEEKDAY_SECOND_HOUR
     
     start_dt, end_dt, start_ms, end_ms = compute_timeslots(
         now, DAYS_AHEAD, start_hour, end_hour
     )
-    booking_url = build_booking_url(start_ms, end_ms, venue_id, ACTIVITY_ID)
+    
+    # Create booking URLs for both venues
+    clubhouse_url = build_booking_url(start_ms, end_ms, BISHAN_CLUBHOUSE_VENUE_ID, ACTIVITY_ID)
+    sports_hall_url = build_booking_url(start_ms, end_ms, BISHAN_SPORTS_HALL_VENUE_ID, ACTIVITY_ID)
 
     start_time = start_dt.strftime("%I:%M %p").lstrip("0")
     display_end_dt = end_dt + timedelta(hours=1)
@@ -112,10 +106,10 @@ def main():
 
     message = (
         "ActiveSG Booking Reminder\n\n"
-        f"Location: {location}\n"
         f"Date: {start_dt.strftime('%A, %d %b %Y')}\n"
         f"Time: {start_time} - {end_time}\n\n"
-        f"Book now:\n{booking_url}"
+        f"Book now (Bishan Clubhouse):\n{clubhouse_url}\n\n"
+        f"If this link does not work, book the Bishan Sports Hall instead:\n{sports_hall_url}"
     )
 
     if args.dry_run:
