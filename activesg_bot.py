@@ -9,6 +9,9 @@ BASE_URL = "https://activesg.gov.sg/facility-bookings/ballots/review"
 # Venue IDs
 BISHAN_CLUBHOUSE_VENUE_ID = "GdiZXcMkIKELrCkd90qBP"
 BISHAN_SPORTS_HALL_VENUE_ID = "LpiaS3dnMUXa39CrtTm9w"
+TAMPINES_HUB_VENUE_ID = "nqBpgnMrPN8u5LLfvyN2T"
+YIO_CHU_KANG_VENUE_ID = "pYMh2B4kDjs6JEE5SoxbJ"
+YISHUN_SPORT_HALL_VENUE_ID = "gwkeAKobIqSCOXA6OgULY"
 ACTIVITY_ID = "YLONatwvqJfikKOmB5N9U"
 
 DAYS_AHEAD = 14
@@ -96,21 +99,41 @@ def main():
         now, DAYS_AHEAD, start_hour, end_hour
     )
     
-    # Create booking URLs for both venues
-    clubhouse_url = build_booking_url(start_ms, end_ms, BISHAN_CLUBHOUSE_VENUE_ID, ACTIVITY_ID)
-    sports_hall_url = build_booking_url(start_ms, end_ms, BISHAN_SPORTS_HALL_VENUE_ID, ACTIVITY_ID)
-
     start_time = start_dt.strftime("%I:%M %p").lstrip("0")
     display_end_dt = end_dt + timedelta(hours=1)
     end_time = display_end_dt.strftime("%I:%M %p").lstrip("0")
-
-    message = (
-        "ActiveSG Booking Reminder\n\n"
-        f"Date: {start_dt.strftime('%A, %d %b %Y')}\n"
-        f"Time: {start_time} - {end_time}\n\n"
-        f"Book now (Bishan Clubhouse):\n{clubhouse_url}\n\n"
-        f"If this link does not work, book the Bishan Sports Hall instead:\n{sports_hall_url}"
-    )
+    
+    # Build message based on weekend or weekday
+    if is_weekend:
+        # Weekend: Include all 5 venues
+        clubhouse_url = build_booking_url(start_ms, end_ms, BISHAN_CLUBHOUSE_VENUE_ID, ACTIVITY_ID)
+        sports_hall_url = build_booking_url(start_ms, end_ms, BISHAN_SPORTS_HALL_VENUE_ID, ACTIVITY_ID)
+        tampines_url = build_booking_url(start_ms, end_ms, TAMPINES_HUB_VENUE_ID, ACTIVITY_ID)
+        yck_url = build_booking_url(start_ms, end_ms, YIO_CHU_KANG_VENUE_ID, ACTIVITY_ID)
+        yishun_url = build_booking_url(start_ms, end_ms, YISHUN_SPORT_HALL_VENUE_ID, ACTIVITY_ID)
+        
+        message = (
+            "ActiveSG Booking Reminder\n\n"
+            f"Date: {start_dt.strftime('%A, %d %b %Y')}\n"
+            f"Time: {start_time} - {end_time}\n\n"
+            f"Book now (Bishan Clubhouse):\n{clubhouse_url}\n\n"
+            f"Bishan Sports Hall:\n{sports_hall_url}\n\n"
+            f"Our Tampines Hub - Community Auditorium:\n{tampines_url}\n\n"
+            f"Yio Chu Kang Sport Hall:\n{yck_url}\n\n"
+            f"Yishun Sport Hall:\n{yishun_url}"
+        )
+    else:
+        # Weekday: Only Bishan venues
+        clubhouse_url = build_booking_url(start_ms, end_ms, BISHAN_CLUBHOUSE_VENUE_ID, ACTIVITY_ID)
+        sports_hall_url = build_booking_url(start_ms, end_ms, BISHAN_SPORTS_HALL_VENUE_ID, ACTIVITY_ID)
+        
+        message = (
+            "ActiveSG Booking Reminder\n\n"
+            f"Date: {start_dt.strftime('%A, %d %b %Y')}\n"
+            f"Time: {start_time} - {end_time}\n\n"
+            f"Book now (Bishan Clubhouse):\n{clubhouse_url}\n\n"
+            f"If this link does not work, book the Bishan Sports Hall instead:\n{sports_hall_url}"
+        )
 
     if args.dry_run:
         print(message)
